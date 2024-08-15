@@ -1,0 +1,12 @@
+{
+    "name": "bryant/psr-4-database",
+    "autoload": {
+        "psr-4": {
+            "MiniMarkPlace\\Controllers\\": "src/Controllers/",
+            "MiniMarkPlace\\Models\\": "src/Models/",
+            "MiniMarkPlace\\Exceptions\\": "src/Exceptions/",
+            "MiniMarkPlace\\Libraries\\": "src/Libraries/"
+        }
+    },
+    "require": {}
+}
