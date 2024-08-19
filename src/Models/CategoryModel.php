@@ -21,8 +21,7 @@ class CategoryModel extends Database
         if ($result) {
             return $result->fetch_all(MYSQLI_ASSOC);
         }
-
-        // Handle error or log it
+        
         throw new Exception("Error retrieving categories: " . $this->conn->error);
     }
 
@@ -38,7 +37,6 @@ class CategoryModel extends Database
         $stmt->bind_param("s", $data['name']);
 
         if (!$stmt->execute()) {
-            // Handle error or log it
             throw new Exception("Error creating category: " . $stmt->error);
         }
 
