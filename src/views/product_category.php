@@ -1,6 +1,5 @@
 <?php
-session_start(); 
-
+session_start();
 
 $errors = isset($_SESSION['errors']) ? $_SESSION['errors'] : '';
 unset($_SESSION['errors']); 
@@ -18,15 +17,20 @@ unset($_SESSION['errors']);
 <main class="container mx-auto p-4">
     
     <!-- Display Validation Errors -->
-    <?php if (!empty($errors)): ?>
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+    <?php if (($errors)): ?>
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
             <strong class="font-bold">Validation Error:</strong>
-            <span class="block sm:inline"><?php echo htmlspecialchars($errors); ?></span>
+            <ul class="mt-2 ml-4 list-disc list-inside">
+                <?php foreach ($errors as $error): ?>
+                     <li><?php echo htmlspecialchars($error); ?></li>
+                <?php endforeach; ?>
+            </ul>
         </div>
     <?php endif; ?>
 
     <!-- Layout Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
         <!-- Forms -->
         <div>
             <!-- Add Category Form -->
@@ -111,7 +115,6 @@ unset($_SESSION['errors']);
         </div>
     </div>
 </main>
-
 <script>
     function editCategory(id, name) {
         document.getElementById('updateId').value = id;
@@ -119,6 +122,5 @@ unset($_SESSION['errors']);
         document.getElementById('updateCategoryForm').scrollIntoView();
     }
 </script>
-
 </body>
 </html>

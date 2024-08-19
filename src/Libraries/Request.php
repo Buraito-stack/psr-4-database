@@ -14,29 +14,12 @@ class Request
     {
         $this->setMethod($_SERVER['REQUEST_METHOD']);
         $this->setUri($_SERVER['REQUEST_URI']);
-
         $this->handleInput();
     }
 
-    public function handleInput()
+    private function handleInput()
     {
-        switch ($this->getMethod()) {
-            case 'GET':
-                $this->setInputs($_GET);
-                break;
-
-            case 'POST':
-                $this->setInputs($_POST);
-                break;
-            
-            default:
-                break;
-        }
-    }
-
-    private function setInputs(array $inputs)
-    {
-        $this->inputs = $inputs;
+        $this->inputs = $this->getMethod() === 'POST' ? $_POST : $_GET;
     }
 
     public function getInput(string $name)
@@ -44,27 +27,27 @@ class Request
         return $this->inputs[$name] ?? null;
     }
 
-    public function allInput()
+    public function allInput(): array
     {
         return $this->inputs;
     }
 
-    public function setMethod(string $method)
+    private function setMethod(string $method)
     {
         $this->method = $method;
     }
 
-    public function getMethod()
+    public function getMethod(): string
     {
         return $this->method;
     }
 
-    public function setUri(string $uri)
+    private function setUri(string $uri)
     {
         $this->uri = $uri;
     }
 
-    public function getUri()
+    public function getUri(): string
     {
         return $this->uri;
     }
@@ -72,24 +55,48 @@ class Request
     public function validate(array $data, array $rules)
     {
         $errors = [];
-
+    
         foreach ($rules as $field => $rule) {
             $rulesArray = explode('|', $rule);
             foreach ($rulesArray as $r) {
-                switch ($r) {
+                [$ruleName, $param] = explode(':', $r) + [null, null];
+    
+                switch ($ruleName) {
                     case 'required':
-                        if (!isset($data[$field]) || empty(trim($data[$field]))) {
+                        if (empty(trim($data[$field] ?? ''))) {
                             $errors[$field][] = "The $field field is required.";
                         }
                         break;
-                    // Add more validation rules as needed
+                    case 'string':
+                        if (!is_string($data[$field])) {
+                            $errors[$field][] = "The $field must be a string.";
+                        }
+                        break;
+                    case 'min':
+                        $min = $param ?? 3;
+                        if (strlen($data[$field]) < $min) {
+                            $errors[$field][] = "The $field must be at least $min characters.";
+                        }
+                        break;
+                    case 'max':
+                        $max = $param ?? 25;
+                        if (strlen($data[$field]) > $max) {
+                            $errors[$field][] = "The $field must not be greater than $max characters.";
+                        }
+                        break;
+                    case 'integer':
+                        if (!filter_var($data[$field], FILTER_VALIDATE_INT)) {
+                            $errors[$field][] = "The $field must be an integer.";
+                        }
+                        break;
                 }
             }
         }
-
-        if (!empty($errors)) {
+    
+        if ($errors) {
             throw new ValidatorException("Validation failed", 0, null, $errors);
         }
     }
-}
-?>
+}    
+    
+      

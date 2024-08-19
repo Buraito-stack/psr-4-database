@@ -8,7 +8,7 @@ class ValidatorException extends \Exception
 
     public function __construct(
         string $message = "Validation failed",
-        int $code = 0,
+        int $code       = 0,
         \Throwable $previous = null,
         array $validationErrors = []
     ) {
