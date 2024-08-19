@@ -1,9 +1,3 @@
-<?php
-session_start();
-
-$errors = isset($_SESSION['errors']) ? $_SESSION['errors'] : [];
-unset($_SESSION['errors']);
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,20 +10,6 @@ unset($_SESSION['errors']);
 <body class="bg-gray-100 text-gray-900">
 <main class="container mx-auto p-4">
     
-    <!-- Display Validation Errors -->
-    <?php if (!empty($errors)): ?>
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <strong class="font-bold">Validation Error:</strong>
-            <ul class="mt-2 ml-4 list-disc list-inside">
-                <?php foreach ($errors as $fieldErrors): ?>
-                    <?php foreach ($fieldErrors as $error): ?>
-                        <li><?php echo htmlspecialchars($error); ?></li>
-                    <?php endforeach; ?>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    <?php endif; ?>
-
     <!-- Layout Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
