@@ -3,34 +3,30 @@ namespace MiniMarkPlace\Controllers;
 
 use MiniMarkPlace\Models\CategoryModel;
 use MiniMarkPlace\Libraries\Request;
+use MiniMarkPlace\Libraries\Validator;
 use MiniMarkPlace\Exceptions\ValidatorException;
 
 class ProductCategoryController
 {
-    protected $categoryModel;
-    protected $request;
-
-    public function __construct()
-    {
-        $this->categoryModel = new CategoryModel();
-        $this->request       = new Request();
-    }
-
     public function show()
     {
-        $categories = $this->categoryModel->findAll();
+        $categoryModel = new CategoryModel();
+        $categories = $categoryModel->findAll();
         require __DIR__ . '/../views/product_category.php';
     }
 
-    public function store()
+    public function store(Request $request)
     {
+        $validator = new Validator();
+        
         try {
-            $data = $this->request->allInput();
-            $this->request->validate($data, [
+            $data = $request->allInput();
+            $validator->validate($data, [
                 'name' => 'required|string|min:3|max:25',
             ]);
 
-            $this->categoryModel->create($data);
+            $categoryModel = new CategoryModel();
+            $categoryModel->create($data);
             header("Location: /product-category");
             exit();
         } catch (ValidatorException $e) {
@@ -40,17 +36,20 @@ class ProductCategoryController
         }
     }
 
-    public function update()
+    public function update(Request $request)
     {
+        $validator = new Validator();
+
         try {
-            $data = $this->request->allInput();
-            $this->request->validate($data, [
+            $data = $request->allInput();
+            $validator->validate($data, [
                 'id'   => 'required|integer',
                 'name' => 'required|string|min:3|max:25',
             ]);
 
             $id = $data['id'];
-            $this->categoryModel->update($id, ['name' => $data['name']]);
+            $categoryModel = new CategoryModel();
+            $categoryModel->update($id, ['name' => $data['name']]);
             header("Location: /product-category");
             exit();
         } catch (ValidatorException $e) {
@@ -60,16 +59,19 @@ class ProductCategoryController
         }
     }
 
-    public function delete()
+    public function delete(Request $request)
     {
+        $validator = new Validator();
+
         try {
-            $data = $this->request->allInput();
-            $this->request->validate($data, [
+            $data = $request->allInput();
+            $validator->validate($data, [
                 'id' => 'required|integer',
             ]);
 
             $id = $data['id'];
-            $this->categoryModel->delete($id);
+            $categoryModel = new CategoryModel();
+            $categoryModel->delete($id);
             header("Location: /product-category");
             exit();
         } catch (ValidatorException $e) {
