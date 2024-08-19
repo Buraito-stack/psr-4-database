@@ -8,7 +8,7 @@ class Request
 {
     protected string $method;
     protected string $uri;
-    protected array $inputs = []; // Initialize as an empty array
+    protected array $inputs = []; 
 
     public function __construct()
     {
