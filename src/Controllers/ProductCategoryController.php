@@ -8,7 +8,7 @@ use MiniMarkPlace\Exceptions\ValidatorException;
 
 class ProductCategoryController
 {
-    public function show()
+    public function show(Request $request)
     {
         $categoryModel = new CategoryModel();
         $categories = $categoryModel->findAll();
@@ -18,7 +18,7 @@ class ProductCategoryController
     public function store(Request $request)
     {
         $validator = new Validator();
-        
+
         try {
             $data = $request->allInput();
             $validator->validate($data, [
@@ -81,4 +81,3 @@ class ProductCategoryController
         }
     }
 }
-?>
