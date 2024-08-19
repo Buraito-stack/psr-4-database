@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-$errors = isset($_SESSION['errors']) ? $_SESSION['errors'] : '';
-unset($_SESSION['errors']); 
+$errors = isset($_SESSION['errors']) ? $_SESSION['errors'] : [];
+unset($_SESSION['errors']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,12 +17,14 @@ unset($_SESSION['errors']);
 <main class="container mx-auto p-4">
     
     <!-- Display Validation Errors -->
-    <?php if (($errors)): ?>
+    <?php if (!empty($errors)): ?>
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
             <strong class="font-bold">Validation Error:</strong>
             <ul class="mt-2 ml-4 list-disc list-inside">
-                <?php foreach ($errors as $error): ?>
-                     <li><?php echo htmlspecialchars($error); ?></li>
+                <?php foreach ($errors as $fieldErrors): ?>
+                    <?php foreach ($fieldErrors as $error): ?>
+                        <li><?php echo htmlspecialchars($error); ?></li>
+                    <?php endforeach; ?>
                 <?php endforeach; ?>
             </ul>
         </div>
@@ -93,7 +95,7 @@ unset($_SESSION['errors']);
                                     echo "<td class='px-4 py-3 whitespace-nowrap text-sm text-gray-500'>" . htmlspecialchars($category['created_at']) . "</td>";
                                     echo "<td class='px-4 py-3 whitespace-nowrap text-sm text-gray-500'>" . htmlspecialchars($category['updated_at']) . "</td>";
                                     echo "<td class='px-4 py-3 whitespace-nowrap text-sm font-medium'>";
-                                    echo "<button type='button' class='px-2 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-xs' onclick='editCategory({$category['id']}, \"{$category['name']}\")'><i class='fas fa-edit'></i></button>";
+                                    echo "<button type='button' class='px-2 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-xs' onclick='editCategory({$category['id']}, \"" . htmlspecialchars($category['name']) . "\")'><i class='fas fa-edit'></i></button>";
                                     echo "<form action='/product-category' method='POST' class='inline ml-2'>";
                                     echo "<input type='hidden' name='_method' value='DELETE'>";
                                     echo "<input type='hidden' name='id' value='{$category['id']}'>";

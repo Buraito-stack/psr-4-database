@@ -8,7 +8,7 @@ class Request
 {
     protected string $method;
     protected string $uri;
-    protected array $inputs;
+    protected array $inputs = []; // Initialize as an empty array
 
     public function __construct()
     {
@@ -17,12 +17,14 @@ class Request
         $this->handleInput();
     }
 
-    private function handleInput()
+    private function handleInput(): void
     {
-        $this->inputs = $this->getMethod() === 'POST' ? $_POST : $_GET;
+        $this->inputs = $this->getMethod() === 'POST'
+            ? filter_input_array(INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? []
+            : filter_input_array(INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? [];
     }
 
-    public function getInput(string $name)
+    public function getInput(string $name): ?string
     {
         return $this->inputs[$name] ?? null;
     }
@@ -32,7 +34,7 @@ class Request
         return $this->inputs;
     }
 
-    private function setMethod(string $method)
+    private function setMethod(string $method): void
     {
         $this->method = $method;
     }
@@ -42,7 +44,7 @@ class Request
         return $this->method;
     }
 
-    private function setUri(string $uri)
+    private function setUri(string $uri): void
     {
         $this->uri = $uri;
     }
@@ -55,7 +57,7 @@ class Request
     public function validate(array $data, array $rules)
     {
         $errors = [];
-    
+        
         foreach ($rules as $field => $rule) {
             $rulesArray = explode('|', $rule);
             foreach ($rulesArray as $r) {
@@ -67,27 +69,27 @@ class Request
                             $errors[$field][] = "The $field field is required.";
                         }
                         break;
-                        
+    
                     case 'string':
-                        if (!is_string($data[$field])) {
-                            $errors[$field][] = "The $field must be a string.";
+                        if (!is_string($data[$field]) || empty(trim($data[$field]))) {
+                            $errors[$field][] = "The $field must be a valid string.";
                         }
                         break;
-
+                        
                     case 'min':
                         $min = $param ?? 3;
                         if (strlen($data[$field]) < $min) {
                             $errors[$field][] = "The $field must be at least $min characters.";
                         }
                         break;
-
+    
                     case 'max':
                         $max = $param ?? 25;
                         if (strlen($data[$field]) > $max) {
                             $errors[$field][] = "The $field must not be greater than $max characters.";
                         }
                         break;
-
+    
                     case 'integer':
                         if (!filter_var($data[$field], FILTER_VALIDATE_INT)) {
                             $errors[$field][] = "The $field must be an integer.";
@@ -102,5 +104,4 @@ class Request
         }
     }
 }    
-    
-      
+?>

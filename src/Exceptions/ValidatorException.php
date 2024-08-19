@@ -41,5 +41,6 @@ class ValidatorException extends \Exception
         }
         return implode(', ', $errors);
     }
+    
 }
 ?>

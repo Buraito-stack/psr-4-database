@@ -3,6 +3,8 @@
 namespace MiniMarkPlace\Models;
 
 use MiniMarkPlace\Libraries\Database;
+use mysqli_stmt;
+use Exception;
 
 class CategoryModel extends Database
 {
@@ -20,7 +22,8 @@ class CategoryModel extends Database
             return $result->fetch_all(MYSQLI_ASSOC);
         }
 
-        return [];
+        // Handle error or log it
+        throw new Exception("Error retrieving categories: " . $this->conn->error);
     }
 
     /**
@@ -33,7 +36,13 @@ class CategoryModel extends Database
     {
         $stmt = $this->prepareStatement("INSERT INTO categories (name) VALUES (?)");
         $stmt->bind_param("s", $data['name']);
-        return $stmt->execute();
+
+        if (!$stmt->execute()) {
+            // Handle error or log it
+            throw new Exception("Error creating category: " . $stmt->error);
+        }
+
+        return true;
     }
 
     /**
@@ -47,7 +56,12 @@ class CategoryModel extends Database
     {
         $stmt = $this->prepareStatement("UPDATE categories SET name = ? WHERE id = ?");
         $stmt->bind_param("si", $data['name'], $id);
-        return $stmt->execute();
+
+        if (!$stmt->execute()) {
+            throw new Exception("Error updating category: " . $stmt->error);
+        }
+
+        return true;
     }
 
     /**
@@ -60,17 +74,28 @@ class CategoryModel extends Database
     {
         $stmt = $this->prepareStatement("DELETE FROM categories WHERE id = ?");
         $stmt->bind_param("i", $id);
-        return $stmt->execute();
+
+        if (!$stmt->execute()) {
+            throw new Exception("Error deleting category: " . $stmt->error);
+        }
+
+        return true;
     }
 
     /**
      * Prepare and return an SQL statement.
      *
      * @param string $query
-     * @return \mysqli_stmt
+     * @return mysqli_stmt
      */
-    private function prepareStatement(string $query): \mysqli_stmt
+    private function prepareStatement(string $query): mysqli_stmt
     {
-        return $this->conn->prepare($query);
+        $stmt = $this->conn->prepare($query);
+        if ($stmt === false) {
+            throw new Exception("Error preparing statement: " . $this->conn->error);
+        }
+        
+        return $stmt;
     }
 }
+?>

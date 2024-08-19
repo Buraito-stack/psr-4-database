@@ -1,5 +1,4 @@
 <?php
-
 namespace MiniMarkPlace\Controllers;
 
 use MiniMarkPlace\Models\CategoryModel;
@@ -13,28 +12,30 @@ class ProductCategoryController
 
     public function __construct()
     {
-        $this->categoryModel = (new CategoryModel);
-        $this->request       = (new Request); 
+        $this->categoryModel = new CategoryModel();
+        $this->request       = new Request();
     }
 
     public function show()
     {
         $categories = $this->categoryModel->findAll();
-        require __DIR__ . '/../views/product_category.php'; 
+        require __DIR__ . '/../views/product_category.php';
     }
 
     public function store()
     {
         try {
             $data = $this->request->allInput();
-            $this->request->validate($data, ['name' => 'required|string|min|max']);
+            $this->request->validate($data, [
+                'name' => 'required|string|min:3|max:25',
+            ]);
 
             $this->categoryModel->create($data);
-            header("Location: /product-category"); 
+            header("Location: /product-category");
             exit();
         } catch (ValidatorException $e) {
-            $_SESSION['errors'] = $e->formatErrors();
-            header("Location: /product-category"); 
+            $_SESSION['errors'] = $e->getValidationErrors();
+            header("Location: /product-category");
             exit();
         }
     }
@@ -43,15 +44,18 @@ class ProductCategoryController
     {
         try {
             $data = $this->request->allInput();
-            $this->request->validate($data, ['id' => 'required|integer', 'name' => 'required|string|min|max']);
+            $this->request->validate($data, [
+                'id'   => 'required|integer',
+                'name' => 'required|string|min:3|max:25',
+            ]);
 
             $id = $data['id'];
             $this->categoryModel->update($id, ['name' => $data['name']]);
-            header("Location: /product-category"); 
+            header("Location: /product-category");
             exit();
         } catch (ValidatorException $e) {
-            $_SESSION['errors'] = $e->formatErrors();
-            header("Location: /product-category"); 
+            $_SESSION['errors'] = $e->getValidationErrors();
+            header("Location: /product-category");
             exit();
         }
     }
@@ -60,18 +64,19 @@ class ProductCategoryController
     {
         try {
             $data = $this->request->allInput();
-            $this->request->validate($data, ['id' => 'required|integer']);
+            $this->request->validate($data, [
+                'id' => 'required|integer',
+            ]);
 
             $id = $data['id'];
             $this->categoryModel->delete($id);
-            header("Location: /product-category"); 
+            header("Location: /product-category");
             exit();
         } catch (ValidatorException $e) {
-            $_SESSION['errors'] = $e->formatErrors();
-            header("Location: /product-category"); 
+            $_SESSION['errors'] = $e->getValidationErrors();
+            header("Location: /product-category");
             exit();
         }
     }
-
 }
 ?>
