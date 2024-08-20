@@ -1,8 +1,7 @@
 <?php
-
 namespace MiniMarkPlace\Libraries;
 
-use ReflectionClass;
+use ReflectionMethod;
 use Exception;
 
 class Routing
@@ -16,6 +15,7 @@ class Routing
 
     public function run()
     {
+        $request = new Request();
         $method = $_SERVER['REQUEST_METHOD'];
         $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
@@ -34,26 +34,35 @@ class Routing
                 [$controllerClass, $methodName] = $handler;
 
                 if (class_exists($controllerClass) && method_exists($controllerClass, $methodName)) {
-                    $controller = new $controllerClass();
-                    $reflection = new ReflectionClass($controller);
-                    $methodParams = $reflection->getMethod($methodName)->getParameters();
-                    $params = [];
+                    $controller = new $controllerClass;
+                    $reflectionMethod = new ReflectionMethod($controller, $methodName);
 
-                    foreach ($methodParams as $parameter) {
+                    $params = [];
+                    $hasRequest = false;
+
+                    foreach ($reflectionMethod->getParameters() as $parameter) {
                         $paramType = $parameter->getType();
 
                         if ($paramType && $paramType->getName() === Request::class) {
-                            $params[] = new Request();
+                            $hasRequest = true;
+                        } else {
+                            $params[] = null; 
                         }
                     }
 
-                    return $reflection->getMethod($methodName)->invokeArgs($controller, $params);
+                    if ($hasRequest) {
+                        array_unshift($params, $request);
+                    }
+
+                    return $reflectionMethod->invokeArgs($controller, $params);
                 }
 
                 throw new Exception("Controller or method does not exist.");
             }
         }
 
-        return '404 Not Found';
+        header('HTTP/1.1 404 Not Found');
+        die('404 Not Found');
     }
 }
+?>
