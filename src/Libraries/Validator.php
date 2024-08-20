@@ -14,7 +14,7 @@ class Validator
      * @return void
      * @throws ValidatorException
      */
-    public function validate(array $data, array $rules): void
+    public static function validate(array $data, array $rules): void
     {
         $errors = [];
         
