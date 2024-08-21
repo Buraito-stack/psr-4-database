@@ -22,7 +22,7 @@ class ProductCategoryController
         try {
             $data = $request->allInput();
             $validator->validate($data, [
-                'name' => 'required|string|min:3|max:25',
+                'name' => 'required|string|min|max',
             ]);
 
             $categoryModel = new CategoryModel();
@@ -44,7 +44,7 @@ class ProductCategoryController
             $data = $request->allInput();
             $validator->validate($data, [
                 'id'   => 'required|integer',
-                'name' => 'required|string|min:3|max:25',
+                'name' => 'required|string|min|max',
             ]);
 
             $id = $data['id'];
