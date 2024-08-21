@@ -7,9 +7,9 @@ class ValidatorException extends \Exception
     private array $validationErrors;
 
     public function __construct(
-        string $message = "Validation failed",
-        int $code       = 0,
-        \Throwable $previous = null,
+        string $message         = "Validation failed",
+        int $code               = 0,
+        \Throwable $previous    = null,
         array $validationErrors = []
     ) {
         parent::__construct($message, $code, $previous);
