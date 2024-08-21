@@ -29,10 +29,12 @@ class ProductCategoryController
             $categoryModel->create($data);
             header("Location: /product-category");
             exit();
+            
         } catch (ValidatorException $e) {
             $_SESSION['errors'] = $e->getValidationErrors();
             header("Location: /product-category");
             exit();
+            
         }
     }
 
@@ -52,10 +54,12 @@ class ProductCategoryController
             $categoryModel->update($id, ['name' => $data['name']]);
             header("Location: /product-category");
             exit();
+            
         } catch (ValidatorException $e) {
             $_SESSION['errors'] = $e->getValidationErrors();
             header("Location: /product-category");
             exit();
+            
         }
     }
 
@@ -74,10 +78,12 @@ class ProductCategoryController
             $categoryModel->delete($id);
             header("Location: /product-category");
             exit();
+            
         } catch (ValidatorException $e) {
             $_SESSION['errors'] = $e->getValidationErrors();
             header("Location: /product-category");
             exit();
+            
         }
     }
 }
