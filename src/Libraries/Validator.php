@@ -7,11 +7,11 @@ use MiniMarkPlace\Exceptions\ValidatorException;
 class Validator
 {
     private static $messages = [
-        'required' => ':attribute diperlukan.',
-        'string'   => ':attribute harus berupa string.',
-        'min'      => ':attribute harus memiliki minimal :min karakter.',
-        'max'      => ':attribute tidak boleh lebih dari :max karakter.',
-        'integer'  => ':attribute harus berupa integer.',
+        'required' => ':attribute is required.',
+        'string'   => ':attribute must be a string.',
+        'min'      => ':attribute must be at least :min characters.',
+        'max'      => ':attribute cannot be more than :max characters.',
+        'integer'  => ':attribute must be an integer.',
     ];
 
     public static function validate(array $data, array $rules)
@@ -19,19 +19,34 @@ class Validator
         $errors = [];
 
         foreach ($rules as $field => $ruleSet) {
-            $rulesArray = explode('|', $ruleSet);
+            $ruleArray = explode('|', $ruleSet);
 
-            foreach ($rulesArray as $rule) {
-                $value = $data[$field] ?? null;
+            foreach ($ruleArray as $rule) {
                 $ruleName = explode(':', $rule)[0];
-                $parameters = explode(':', $rule);
+                $parameters = array_slice(explode(':', $rule), 1);
 
-                if (method_exists(static::class, $ruleName)) {
-                    $error = static::$ruleName($field, $value, $parameters);
+                switch ($ruleName) {
+                    case 'required':
+                        $error = self::validateRequired($field, $data[$field] ?? null);
+                        break;
+                    case 'string':
+                        $error = self::validateString($field, $data[$field] ?? null);
+                        break;
+                    case 'min':
+                        $error = self::validateMin($field, $data[$field] ?? null, $parameters);
+                        break;
+                    case 'max':
+                        $error = self::validateMax($field, $data[$field] ?? null, $parameters);
+                        break;
+                    case 'integer':
+                        $error = self::validateInteger($field, $data[$field] ?? null);
+                        break;
+                    default:
+                        $error = null;
+                }
 
-                    if ($error) {
-                        $errors[$field][] = $error;
-                    }
+                if ($error) {
+                    $errors[$field][] = $error;
                 }
             }
         }
@@ -43,16 +58,16 @@ class Validator
         return true;
     }
 
-    protected static function required($field, $value, $parameters)
+    private static function validateRequired($field, $value)
     {
-        if (is_null($value) || $value === '') {
+        if (empty(trim($value))) {
             return str_replace(':attribute', $field, self::$messages['required']);
         }
 
         return null;
     }
 
-    protected static function string($field, $value, $parameters)
+    private static function validateString($field, $value)
     {
         if (!is_string($value)) {
             return str_replace(':attribute', $field, self::$messages['string']);
@@ -61,9 +76,9 @@ class Validator
         return null;
     }
 
-    protected static function min($field, $value, $parameters)
+    private static function validateMin($field, $value, $parameters)
     {
-        $min = $parameters[1] ?? 0;
+        $min = $parameters[0] ?? 0;
         if (strlen($value) < $min) {
             return str_replace(
                 [':attribute', ':min'],
@@ -75,9 +90,9 @@ class Validator
         return null;
     }
 
-    protected static function max($field, $value, $parameters)
+    private static function validateMax($field, $value, $parameters)
     {
-        $max = $parameters[1] ?? PHP_INT_MAX;
+        $max = $parameters[0] ?? PHP_INT_MAX;
         if (strlen($value) > $max) {
             return str_replace(
                 [':attribute', ':max'],
@@ -89,9 +104,9 @@ class Validator
         return null;
     }
 
-    protected static function integer($field, $value, $parameters)
+    private static function validateInteger($field, $value)
     {
-        if (!filter_var($value, FILTER_VALIDATE_INT)) {
+        if (!filter_var($value, FILTER_VALIDATE_INT) !== false) {
             return str_replace(':attribute', $field, self::$messages['integer']);
         }
 
