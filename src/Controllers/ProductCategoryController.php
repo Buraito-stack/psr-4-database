@@ -11,7 +11,7 @@ class ProductCategoryController
     public function show(Request $request)
     {
         $categoryModel = new CategoryModel();
-        $categories = $categoryModel->findAll();
+        $categories    = $categoryModel->findAll();
         require __DIR__ . '/../views/product_category.php';
     }
 
