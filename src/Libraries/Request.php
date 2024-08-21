@@ -2,46 +2,44 @@
 
 namespace MiniMarkPlace\Libraries;
 
-use MiniMarkPlace\Exceptions\ValidatorException;
-
 class Request
 {
-    private static string $method;
-    private static string $uri;
-    private static array $inputs = []; 
+    private string $method;
+    private string $uri;
+    private array $inputs = []; 
 
-    public static function initialize(): void
+    public function __construct()
     {
-        self::$method = $_SERVER['REQUEST_METHOD'];
-        self::$uri = $_SERVER['REQUEST_URI'];
-        self::handleInput();
+        $this->method = $_SERVER['REQUEST_METHOD'];
+        $this->uri = $_SERVER['REQUEST_URI'];
+        $this->handleInput();
     }
 
-    private static function handleInput(): void
+    private function handleInput(): void
     {
-        self::$inputs = self::$method === 'POST'
+        $this->inputs = $this->method === 'POST'
             ? filter_input_array(INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? []
             : filter_input_array(INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? [];
     }
 
-    public static function getInput(string $name): ?string
+    public function getInput(string $name): ?string
     {
-        return self::$inputs[$name] ?? null;
+        return $this->inputs[$name] ?? null;
     }
 
-    public static function allInput(): array
+    public function allInput(): array
     {
-        return self::$inputs;
+        return $this->inputs;
     }
 
-    public static function getMethod(): string
+    public function getMethod(): string
     {
-        return self::$method;
+        return $this->method;
     }
 
-    public static function getUri(): string
+    public function getUri(): string
     {
-        return self::$uri;
+        return $this->uri;
     }
 }
 ?>
