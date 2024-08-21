@@ -1,4 +1,5 @@
 <?php
+
 namespace MiniMarkPlace\Controllers;
 
 use MiniMarkPlace\Models\CategoryModel;
