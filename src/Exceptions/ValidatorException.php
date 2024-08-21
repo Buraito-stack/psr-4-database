@@ -4,16 +4,16 @@ namespace MiniMarkPlace\Exceptions;
 
 class ValidatorException extends \Exception
 {
-    private array $validationErrors;
+    private array $errors;
 
     public function __construct(
-        string $message         = "Validation failed",
-        int $code               = 0,
-        \Throwable $previous    = null,
-        array $validationErrors = []
+        array $errors = [],
+        string $message = "Validation failed",
+        int $code = 0,
+        \Throwable $previous = null
     ) {
         parent::__construct($message, $code, $previous);
-        $this->validationErrors = $validationErrors;
+        $this->errors = $errors;
     }
 
     /**
@@ -23,23 +23,19 @@ class ValidatorException extends \Exception
      */
     public function getValidationErrors(): array
     {
-        return $this->validationErrors;
+        return $this->errors;
     }
 
     /**
-     * Format errors as a string.
+     * Format errors as a JSON string.
      *
      * @return string
      */
-    public function formatErrors(): string
+    public function toJson(): string
     {
-        $errors = [];
-        foreach ($this->validationErrors as $field => $messages) {
-            foreach ($messages as $message) {
-                $errors[] = $message;
-            }
-        }
-        return implode(', ', $errors);
-    }    
+        return json_encode([
+            'message' => $this->getMessage(),
+            'errors' => $this->getValidationErrors()
+        ]);
+    }
 }
-?>
