@@ -15,7 +15,7 @@ class CategoryModel extends Database
      */
     public function findAll(): array
     {
-        $query = "SELECT * FROM categories";
+        $query  = "SELECT * FROM categories";
         $result = $this->conn->query($query);
 
         if ($result) {
