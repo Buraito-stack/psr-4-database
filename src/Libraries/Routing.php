@@ -16,8 +16,8 @@ class Routing
     public function run()
     {
         $request = new Request();
-        $method = $_SERVER['REQUEST_METHOD'];
-        $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $method  = $_SERVER['REQUEST_METHOD'];
+        $path    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
         if ($method === 'POST' && isset($_POST['_method'])) {
             $method = strtoupper($_POST['_method']);
