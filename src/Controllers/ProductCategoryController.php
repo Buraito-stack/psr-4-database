@@ -8,10 +8,16 @@ use MiniMarkPlace\Exceptions\ValidatorException;
 
 class ProductCategoryController
 {
+    private $categoryModel;
+
+    public function __construct()
+    {
+        $this->categoryModel = new CategoryModel();
+    }
+
     public function show(Request $request)
     {
-        $categoryModel = new CategoryModel();
-        $categories = $categoryModel->findAll();
+        $categories = $this->categoryModel->findAll();
         require __DIR__ . '/../views/product_category.php';
     }
 
@@ -23,8 +29,7 @@ class ProductCategoryController
                 'name' => 'required|string|min:3|max:25',
             ]);
 
-            $categoryModel = new CategoryModel();
-            $categoryModel->create($data);
+            $this->categoryModel->create($data);
             header("Location: /product-category");
             exit();
             
@@ -45,8 +50,7 @@ class ProductCategoryController
             ]);
 
             $id = $data['id'];
-            $categoryModel = new CategoryModel();
-            $categoryModel->update($id, ['name' => $data['name']]);
+            $this->categoryModel->update($id, ['name' => $data['name']]);
             header("Location: /product-category");
             exit();
 
@@ -66,8 +70,7 @@ class ProductCategoryController
             ]);
 
             $id = $data['id'];
-            $categoryModel = new CategoryModel();
-            $categoryModel->delete($id);
+            $this->categoryModel->delete($id);
             header("Location: /product-category");
             exit();
 
@@ -78,3 +81,4 @@ class ProductCategoryController
         }
     }
 }
+
