@@ -1,5 +1,4 @@
 <?php
-
 namespace MiniMarkPlace\Controllers;
 
 use MiniMarkPlace\Models\CategoryModel;
@@ -12,18 +11,16 @@ class ProductCategoryController
     public function show(Request $request)
     {
         $categoryModel = new CategoryModel();
-        $categories    = $categoryModel->findAll();
+        $categories = $categoryModel->findAll();
         require __DIR__ . '/../views/product_category.php';
     }
 
     public function store(Request $request)
     {
-        $validator = new Validator();
-
         try {
             $data = $request->allInput();
-            $validator->validate($data, [
-                'name' => 'required|string|min|max',
+            Validator::validate($data, [
+                'name' => 'required|string|min:3|max:25',
             ]);
 
             $categoryModel = new CategoryModel();
@@ -35,19 +32,16 @@ class ProductCategoryController
             $_SESSION['errors'] = $e->getValidationErrors();
             header("Location: /product-category");
             exit();
-            
         }
     }
 
     public function update(Request $request)
     {
-        $validator = new Validator();
-
         try {
             $data = $request->allInput();
-            $validator->validate($data, [
+            Validator::validate($data, [
                 'id'   => 'required|integer',
-                'name' => 'required|string|min|max',
+                'name' => 'required|string|min:3|max:25',
             ]);
 
             $id = $data['id'];
@@ -55,22 +49,19 @@ class ProductCategoryController
             $categoryModel->update($id, ['name' => $data['name']]);
             header("Location: /product-category");
             exit();
-            
+
         } catch (ValidatorException $e) {
             $_SESSION['errors'] = $e->getValidationErrors();
             header("Location: /product-category");
             exit();
-            
         }
     }
 
     public function delete(Request $request)
     {
-        $validator = new Validator();
-
         try {
             $data = $request->allInput();
-            $validator->validate($data, [
+            Validator::validate($data, [
                 'id' => 'required|integer',
             ]);
 
@@ -79,12 +70,11 @@ class ProductCategoryController
             $categoryModel->delete($id);
             header("Location: /product-category");
             exit();
-            
+
         } catch (ValidatorException $e) {
             $_SESSION['errors'] = $e->getValidationErrors();
             header("Location: /product-category");
             exit();
-            
         }
     }
 }
